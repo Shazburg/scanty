@@ -29,7 +29,12 @@ end
 
 desc "Stop the app server"
 task :stop do
-	m = `netstat -lptn | grep 0.0.0.0:#{port}`.match(/LISTEN\s*(\d+)/)
+  if RUBY_PLATFORM.downcase.include?('darwin') then
+	  m = `lsof -i -P | grep *:#{port}`.match(/[^\s]*\s*(\d+)/)   # mac does not support netstat in the same format
+	else
+	  m = `netstat -lptn | grep 0.0.0.0:#{port}`.match(/LISTEN\s*(\d+)/)
+	end
+	
 	if m
 		pid = m[1].to_i
 		puts "Killing old server #{pid}"
