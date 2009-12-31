@@ -82,6 +82,10 @@ get '/rss' do
 	redirect '/feed', 301
 end
 
+get '/posts.atom' do
+	redirect '/feed', 301
+end
+
 ### Admin
 
 get '/auth' do
