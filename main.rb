@@ -5,18 +5,27 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + '/vendor/sequel'
 require 'sequel'
 
 configure do
-	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://blog.db')
-
 	require 'ostruct'
-	Blog = OpenStruct.new(
-		:title => 'a scanty blog',
-		:author => 'John Doe',
-		:url_base => 'http://localhost:4567/',
-		:admin_password => 'changeme',
-		:admin_cookie_key => 'scanty_admin',
-		:admin_cookie_value => '51d6d976913ace58',
-		:disqus_shortname => nil
-	)
+	require 'yaml'
+        
+	def yaml2ostruct(object)
+		return case object
+		when Hash
+			object = object.clone
+			object.each do |key, value|
+				object[key] = yaml2ostruct(value)
+			end
+			OpenStruct.new(object)
+		when Array
+			object = object.clone
+			object.map! { |i| yaml2ostruct(i) }
+		else
+			object
+		end
+	end
+
+	Blog = yaml2ostruct(YAML.load_file("config.yml"))
+	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://blog.db')
 end
 
 error do
