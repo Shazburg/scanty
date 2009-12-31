@@ -1,0 +1,7 @@
+title: your blog name
+author: Your Name
+url_base: http://your_blog_url/
+admin_password: secretpassword
+admin_cookie_key: whatever_cookie_key
+admin_cookie_value: crypted_value_here
+disqus_shortname: nil

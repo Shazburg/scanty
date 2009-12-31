@@ -6,18 +6,27 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + '/vendor/sequel'
 require 'sequel'
 
 configure do
+  require 'ostruct'
+  require 'yaml'
+  
+  def yaml2ostruct(object)    # Thanks Dave! http://www.dribin.org/dave/blog/archives/2006/11/17/hashes_to_ostruct/
+    return case object
+    when Hash
+      object = object.clone
+      object.each do |key, value|
+        object[key] = yaml2ostruct(value)
+      end
+      OpenStruct.new(object)
+    when Array
+      object = object.clone
+      object.map! { |i| yaml2ostruct(i) }
+    else
+      object
+    end
+  end
+  
+  Blog = yaml2ostruct(YAML.load_file("config.yml"))
 	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://blog.db')
-
-	require 'ostruct'
-	Blog = OpenStruct.new(
-		:title => 'dripping faucet',
-		:author => 'Josh Matthews',
-		:url_base => 'http://dripping-faucet.com/',
-		:admin_password => 'secret',
-		:admin_cookie_key => 'scanty_admin',
-		:admin_cookie_value => '2b7c5e354c623e7c644d6930444f38775730634e4254563e695b785038',
-		:disqus_shortname => nil
-	)
 end
 
 error do
