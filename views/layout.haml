@@ -1,0 +1,42 @@
+!!! 1.1
+%html{:xmlns => "http://www.w3.org/1999/xhtml",
+      "xml:lang" => "en",
+      :lang => "en"}
+  %head
+    %meta{'http-equiv' => "content-type",
+          :content => "text/html"}
+    %title= Blog.title
+    %link{:href => "/main.css",
+          :rel => "stylesheet",
+          :type => "text/css"}
+    %link{:href => "/feed",
+          :rel => "alternate",
+          :title => "Primary Feed",
+          :type => "application/atom+xml"}
+  %body
+    #header
+      #logo
+        %h1
+          %a{:href => "/"}= Blog.title
+        %p by #{Blog.author}
+    #content
+      = yield
+    - if Blog.disqus_shortname
+      :javascript
+        //<[CDATA[
+        (function() {
+          var links = document.getElementsByTagName('a');
+          var query = '?';
+          for(var i = 0; i < links.length; i++) {
+            if(links[i].href.indexOf('#disqus_thread') >= 0) {
+              query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+            }
+          }
+          document.write('<script type="text/javascript" src="http://disqus.com/forums/#{Blog.disqus_shortname}/get_num_replies.js' + query + '"></' + 'script>');
+          })();
+        //]]>
+    #footer
+      %p#legal
+        Content by #{Blog.author} | Design adapted from 
+        %a{:href => "http://www.freecsstemplates.org/preview/replenish"}
+          Replenish
