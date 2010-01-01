@@ -3,3 +3,4 @@ blog.db
 tmp/*
 config.yml
 *.tmproj
+*.swp
